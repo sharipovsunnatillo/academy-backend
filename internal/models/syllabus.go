@@ -25,6 +25,8 @@ type TimeSlot struct {
 
 type Lesson struct {
 	ID         uint `gorm:"primaryKey"`
+	GroupID    uint
+	Group      Group `gorm:"foreignKey:GroupID"`
 	SubjectID  uint
 	Subject    Subject `gorm:"foreignKey:SubjectID"`
 	TimeSlotID uint
