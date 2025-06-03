@@ -10,3 +10,14 @@ type Attendance struct {
 	Student   User `gorm:"foreignKey:StudentID"`
 	Status    enums.AttendanceStatus
 }
+
+type Grade struct {
+	ID        uint
+	StudentID uint
+	Student   User `gorm:"foreignKey:StudentID"`
+	LessonID  uint
+	Lesson    Lesson `gorm:"foreignKey:LessonID"`
+	TaskID    uint
+	Task      Task `gorm:"foreignKey:TaskID"`
+	Score     float32
+}

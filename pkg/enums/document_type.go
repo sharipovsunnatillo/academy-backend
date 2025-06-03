@@ -7,5 +7,5 @@ const (
 	IDCard        DocumentType = "id_card"
 	DriverLicense DocumentType = "driver_license"
 	Certificate   DocumentType = "certificate"
-	Other         DocumentType = "other"
+	ELSE          DocumentType = "other"
 )

@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"github.com/sharipov/sunnatillo/academy-backend/pkg/enums"
+	"time"
+)
 
 type Subject struct {
 	ID        uint        `gorm:"primaryKey"`
@@ -25,6 +28,7 @@ type TimeSlot struct {
 
 type Lesson struct {
 	ID         uint `gorm:"primaryKey"`
+	Name       string
 	GroupID    uint
 	Group      Group `gorm:"foreignKey:GroupID"`
 	SubjectID  uint
@@ -38,4 +42,16 @@ type Lesson struct {
 	RoomID     uint
 	Room       Room      `gorm:"foreignKey:RoomID"`
 	Date       time.Time `gorm:"type:date"`
+	Type       enums.LessonType
+	Tasks      []*Task `gorm:"foreignKey:LessonID"`
+}
+
+type Task struct {
+	ID         uint `gorm:"primaryKey"`
+	Name       string
+	LessonID   uint
+	Lesson     Lesson `gorm:"foreignKey:LessonID"`
+	DocumentID uint
+	Document   Document `gorm:"foreignKey:DocumentID"`
+	MaxScore   float32
 }
