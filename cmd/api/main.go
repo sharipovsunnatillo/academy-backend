@@ -5,9 +5,9 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/sharipov/sunnatillo/academy-backend/internal/api"
 	"github.com/sharipov/sunnatillo/academy-backend/internal/models"
 	"github.com/sharipov/sunnatillo/academy-backend/pkg/middlewares"
-	"github.com/sharipov/sunnatillo/academy-backend/seed"
 	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -35,6 +35,8 @@ func main() {
 
 	middleware := middlewares.Ensure(middlewares.Logging)
 	mux := http.NewServeMux()
+	userApi := api.UserMux()
+	mux.Handle("/api/users/v1/", http.StripPrefix("/api/users/v1", userApi))
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", httpPort),
@@ -59,16 +61,16 @@ func main() {
 	if err != nil {
 		log.Fatalf("❌ Failed to connect to database: %v", err)
 	}
-	tables, err := db.Migrator().GetTables()
-	if err != nil {
-		log.Fatalf("❌ Failed to get tables: %v", err)
-	}
-	for _, table := range tables {
-		err := db.Migrator().DropTable(table)
-		if err != nil {
-			log.Fatalf("❌ Failed to drop table %s: %v", table, err)
-		}
-	}
+	//tables, err := db.Migrator().GetTables()
+	//if err != nil {
+	//	log.Fatalf("❌ Failed to get tables: %v", err)
+	//}
+	//for _, table := range tables {
+	//	err := db.Migrator().DropTable(table)
+	//	if err != nil {
+	//		log.Fatalf("❌ Failed to drop table %s: %v", table, err)
+	//	}
+	//}
 
 	err = db.AutoMigrate(
 		&models.Region{},
@@ -91,7 +93,7 @@ func main() {
 		&models.Grade{},
 	)
 
-	seed.Populate(db)
+	//seed.Populate(db) //todo
 
 	// Run server in goroutine
 	go func() {
