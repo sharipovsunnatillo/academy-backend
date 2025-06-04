@@ -1,7 +1,9 @@
 package models
 
+import "github.com/sharipov/sunnatillo/academy-backend/pkg/enums"
+
 type Role struct {
-	Name string `gorm:"primaryKey"`
+	Name enums.Role `gorm:"primaryKey"`
 }
 
 type Permission struct {

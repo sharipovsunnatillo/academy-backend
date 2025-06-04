@@ -17,6 +17,7 @@ type TextBook struct {
 	Authors   string
 	SubjectID uint
 	Subject   Subject
+	/*It also has documents*/
 }
 
 type TimeSlot struct {
@@ -47,11 +48,10 @@ type Lesson struct {
 }
 
 type Task struct {
-	ID         uint `gorm:"primaryKey"`
-	Name       string
-	LessonID   uint
-	Lesson     Lesson `gorm:"foreignKey:LessonID"`
-	DocumentID uint
-	Document   Document `gorm:"foreignKey:DocumentID"`
-	MaxScore   float32
+	ID       uint `gorm:"primaryKey"`
+	Name     string
+	LessonID uint
+	Lesson   Lesson `gorm:"foreignKey:LessonID"`
+	MaxScore float32
+	/*It also has documents*/
 }

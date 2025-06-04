@@ -7,5 +7,6 @@ type Document struct {
 	Name        string
 	Url         string
 	Type        enums.DocumentType
-	ReferenceId uint
+	ReferenceID uint
+	Reference   string
 }

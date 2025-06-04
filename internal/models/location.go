@@ -9,7 +9,7 @@ type Region struct {
 type District struct {
 	ID       uint16 `gorm:"primaryKey"`
 	Name     string
-	RegionID uint
+	RegionID uint8
 	Region   Region `gorm:"foreignKey:RegionID"`
 }
 
