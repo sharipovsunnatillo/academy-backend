@@ -14,37 +14,39 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{db: db}
 }
 
-func (repository UserRepository) Create(user *models.User) uint {
+func (repository UserRepository) Create(user *models.User) (uint, error) {
 	if err := repository.db.Create(&user).Error; err != nil {
-		panic(err)
+		return 0, err
 	}
-	return user.ID
+	return user.ID, nil
 }
 
-func (repository UserRepository) Get(id uint) models.User {
+func (repository UserRepository) Get(id uint) (*models.User, error) {
 	var user models.User
 	if err := repository.db.First(&user, id).Error; err != nil {
-		panic(err)
+		return nil, err
 	}
-	return user
+	return &user, nil
 }
 
-func (repository UserRepository) Update(user *models.User) {
+func (repository UserRepository) Update(user *models.User) error {
 	if err := repository.db.Save(&user).Error; err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
 
-func (repository UserRepository) Delete(id uint) {
+func (repository UserRepository) Delete(id uint) error {
 	if err := repository.db.Delete(&models.User{}, id).Error; err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
 
-func (repository UserRepository) GetAll(filter dto.UserFilter) []models.User {
-	var users []models.User
+func (repository UserRepository) GetAll(filter dto.UserFilter) ([]*models.User, error) {
+	var users []*models.User
 	if err := repository.db.Where("first_name LIKE ?", "%"+filter.Search+"%").Find(&users).Error; err != nil {
-		panic(err)
+		return nil, err
 	}
-	return users
+	return users, nil
 }

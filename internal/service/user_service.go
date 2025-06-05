@@ -22,6 +22,8 @@ func (service UserService) Register(createDto dto.UserCreateDto) (uint, error) {
 		Email:      createDto.Email,
 		Phone:      createDto.Phone,
 	}
-	service.userRepository.Create(&user)
+	if _, err := service.userRepository.Create(&user); err != nil {
+		return 0, err
+	}
 	return user.ID, nil
 }
