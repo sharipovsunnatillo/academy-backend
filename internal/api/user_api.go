@@ -1,24 +1,22 @@
 package api
 
 import (
-	"encoding/json"
-	"fmt"
-	"github.com/sharipov/sunnatillo/academy-backend/pkg/dto"
+	"github.com/sharipov/sunnatillo/academy-backend/internal/service"
 	"net/http"
 )
 
-func UserMux() *http.ServeMux {
-	mux := http.ServeMux{}
+type UserApi struct {
+	userService *service.UserService
+}
+
+func NewUserApi(userService *service.UserService) *UserApi {
+	return &UserApi{userService: userService}
+}
+
+func (userApi UserApi) UserMux() *http.ServeMux {
+	mux := http.NewServeMux()
 	mux.HandleFunc("POST /register", func(writer http.ResponseWriter, request *http.Request) {
-		var createDto dto.UserCreateDto
-		err := json.NewDecoder(request.Body).Decode(
-			&createDto,
-		)
-		if err != nil {
-			return
-		}
-		fmt.Println(createDto)
-		writer.WriteHeader(http.StatusOK)
+		writer.WriteHeader(http.StatusCreated)
 	})
-	return &mux
+	return mux
 }

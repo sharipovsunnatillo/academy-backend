@@ -6,11 +6,11 @@ import (
 	"flag"
 	"fmt"
 	"github.com/sharipov/sunnatillo/academy-backend/internal/api"
-	"github.com/sharipov/sunnatillo/academy-backend/internal/models"
+	"github.com/sharipov/sunnatillo/academy-backend/internal/database"
+	"github.com/sharipov/sunnatillo/academy-backend/internal/repository"
+	"github.com/sharipov/sunnatillo/academy-backend/internal/service"
 	"github.com/sharipov/sunnatillo/academy-backend/pkg/middlewares"
 	"github.com/spf13/viper"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"os"
@@ -31,12 +31,28 @@ func main() {
 		log.Fatalf("❌ Error reading config file, %s", err)
 	}
 
+	db, err := database.NewDB(database.Config{
+		Host:     viper.GetString("datasource.host"),
+		Port:     uint16(viper.GetInt("datasource.port")),
+		User:     viper.GetString("datasource.username"),
+		Password: viper.GetString("datasource.password"),
+		DBName:   viper.GetString("datasource.database"),
+	})
+	if err != nil {
+		log.Fatalf("❌ Failed to connect to database: %v", err)
+	}
+
+	database.AutoMigrate(db)
+
+	userRepository := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepository)
+	userApi := api.NewUserApi(userService)
+
 	httpPort := viper.GetInt("http.port")
 
 	middleware := middlewares.Ensure(middlewares.Logging)
 	mux := http.NewServeMux()
-	userApi := api.UserMux()
-	mux.Handle("/api/users/v1/", http.StripPrefix("/api/users/v1", userApi))
+	mux.Handle("/api/users/v1/", http.StripPrefix("/api/users/v1", userApi.UserMux()))
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", httpPort),
@@ -48,52 +64,6 @@ func main() {
 	fmt.Println("\t\tEnvironment: ", *env)
 	fmt.Println("\t\tListening on port ", server.Addr)
 	fmt.Println("==============================================================================================")
-
-	dsn := fmt.Sprintf(
-		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable timezone=UTC",
-		viper.GetString("datasource.host"),
-		viper.GetInt("datasource.port"),
-		viper.GetString("datasource.username"),
-		viper.GetString("datasource.password"),
-		viper.GetString("datasource.database"),
-	)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		log.Fatalf("❌ Failed to connect to database: %v", err)
-	}
-	//tables, err := db.Migrator().GetTables()
-	//if err != nil {
-	//	log.Fatalf("❌ Failed to get tables: %v", err)
-	//}
-	//for _, table := range tables {
-	//	err := db.Migrator().DropTable(table)
-	//	if err != nil {
-	//		log.Fatalf("❌ Failed to drop table %s: %v", table, err)
-	//	}
-	//}
-
-	err = db.AutoMigrate(
-		&models.Region{},
-		&models.District{},
-		&models.Role{},
-		&models.Permission{},
-		&models.Subject{},
-		&models.TextBook{},
-		&models.TimeSlot{},
-		&models.TrainingCenter{},
-		&models.Branch{},
-		&models.Room{},
-		&models.User{},
-		&models.TeacherInfo{},
-		&models.Document{},
-		&models.Group{},
-		&models.Lesson{},
-		&models.Task{},
-		&models.Attendance{},
-		&models.Grade{},
-	)
-
-	//seed.Populate(db) //todo
 
 	// Run server in goroutine
 	go func() {

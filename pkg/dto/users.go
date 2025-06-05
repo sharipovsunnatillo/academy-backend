@@ -7,3 +7,7 @@ type UserCreateDto struct {
 	Email      string `json:"email"`
 	Phone      string `json:"phone"`
 }
+
+type UserFilter struct {
+	Search string
+}

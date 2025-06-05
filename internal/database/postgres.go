@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"github.com/sharipov/sunnatillo/academy-backend/internal/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -28,4 +29,44 @@ func NewDB(config Config) (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 	return db, nil
+}
+
+func AutoMigrate(db *gorm.DB) {
+	//tables, err := db.Migrator().GetTables()
+	//if err != nil {
+	//	log.Fatalf("❌ Failed to get tables: %v", err)
+	//}
+	//for _, table := range tables {
+	//	err := db.Migrator().DropTable(table)
+	//	if err != nil {
+	//		log.Fatalf("❌ Failed to drop table %s: %v", table, err)
+	//	}
+	//}
+
+	err := db.AutoMigrate(
+		&models.Region{},
+		&models.District{},
+		&models.Role{},
+		&models.Permission{},
+		&models.Subject{},
+		&models.TextBook{},
+		&models.TimeSlot{},
+		&models.TrainingCenter{},
+		&models.Branch{},
+		&models.Room{},
+		&models.User{},
+		&models.TeacherInfo{},
+		&models.Document{},
+		&models.Group{},
+		&models.Lesson{},
+		&models.Task{},
+		&models.Attendance{},
+		&models.Grade{},
+	)
+
+	if err != nil {
+		log.Fatalf("❌ Failed to migrate database: %v", err)
+	}
+
+	//seed.Populate(db) //todo
 }
