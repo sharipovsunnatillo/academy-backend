@@ -14,7 +14,7 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{db: db}
 }
 
-func (repository UserRepository) Create(user models.User) uint {
+func (repository UserRepository) Create(user *models.User) uint {
 	if err := repository.db.Create(&user).Error; err != nil {
 		panic(err)
 	}
@@ -29,7 +29,7 @@ func (repository UserRepository) Get(id uint) models.User {
 	return user
 }
 
-func (repository UserRepository) Update(user models.User) {
+func (repository UserRepository) Update(user *models.User) {
 	if err := repository.db.Save(&user).Error; err != nil {
 		panic(err)
 	}

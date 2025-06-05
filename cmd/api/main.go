@@ -44,15 +44,16 @@ func main() {
 
 	database.AutoMigrate(db)
 
+	mux := http.NewServeMux()
+	middleware := middlewares.Ensure(middlewares.Logging)
+
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
 	userApi := api.NewUserApi(userService)
 
-	httpPort := viper.GetInt("http.port")
+	userApi.Register(mux)
 
-	middleware := middlewares.Ensure(middlewares.Logging)
-	mux := http.NewServeMux()
-	mux.Handle("/api/users/v1/", http.StripPrefix("/api/users/v1", userApi.UserMux()))
+	httpPort := viper.GetInt("http.port")
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", httpPort),
